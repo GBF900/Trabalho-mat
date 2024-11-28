@@ -9,7 +9,7 @@ def menu():
     print("3 - PROJEÇÕES (MICROANÁLISE DE GANHOS E DESPESAS)")
     print("4 - REAJUSTE DE FINANÇAS (EXCLUSÃO, AUMENTO E REDUÇÃO DE DESPESAS E GANHOS)")
     print("5 - LISTAGEM")
-    print("0 - Sair")
+    print("0 - SAIR")
     op = input("INFORME SUA DECISÃO: ")
     while not op.isdigit() or int(op) not in range(0, 6):
         print("Opção inválida! Tente novamente.")
@@ -22,7 +22,7 @@ def cadastro( vet_cad, quant):
         nome = input("NOME COMPLETO:  ").strip()
         if nome.replace(" ", "").isalpha(): 
             break
-        print("NOME INVÁLIDO. TENTE NOVAMENTE.")
+        print("NOME INVÁLIDO.TENTE NOVAMENTE.")
 
     while True:
         uf = input("UNIDADE FEDERAL (UF):  ").strip().upper()
@@ -49,6 +49,7 @@ def cadastro( vet_cad, quant):
     })
     print("Seu cadastro foi bem-sucedido!")
     quant+=1
+    return vet_cad
 
 
 import matplotlib.pyplot as plt
@@ -76,15 +77,16 @@ def finanças(vet_div, n_div):
    
     while mes < 1 or mes > 12:
         print("Mês inválido. Por favor, informe um número entre 1 e 12.")
-        mes = int(input("INDIQUE O MÊS O QUAL VC GOSTARIA DE COMEÇAR A PROGRAMAR SUAS FINANÇAS: "))
+        mes = int(input("INDIQUE O MÊS O QUAL VC GOSTARIA DE COMEÇAR A PROGRAMAR SUAS FINANÇAS:  \n"))
    
     for i in range(12 - (mes - 1)):
         resto.append((i + 1) * sal) 
 
     if sal > 0:
-        print("Seu saldo mensal corresponde a um valor positivo de R$ %.2f \n" % sal)
-        print("Esse valor é o equivalente a sua saúde financeira em nível adequado\n.")
-        print("EXPECTATIVA DE ECONOMIAS ATÉ O FINAL DO ANO: R$ %.2f \n" % sum(resto))
+        print("-"*40)
+        print("Seu saldo mensal corresponde a um valor positivo de R$ %.2f " % sal)
+        print("Esse valor é o equivalente a sua saúde financeira em nível adequado.")
+        print("EXPECTATIVA DE ECONOMIAS ATÉ O FINAL DO ANO: R$ %.2f \n" % resto[-1])
         graf(meses, mes, resto, sal)
        
     else:
@@ -171,14 +173,14 @@ def valores(val, receb, vet_gastos, vet_renda, n_d, n_r):
     print("ABAIXO AS TABELAS COM OS VALORES NOMINAIS DOS GASTOS E GANHOS NOMINAIS: \n")
 
     labels_gastos = ["GASTO %d: R$ %.2f "%((i+1),vet_gastos[i]) for i in range(len(vet_gastos))]
-    explode_gastos = [0.001 if g == max(vet_gastos) else 0 for g in vet_gastos]
+    explode_gastos = [0.01 if g == max(vet_gastos) else 0 for g in vet_gastos]
     plt.pie(vet_gastos, labels=labels_gastos, autopct='%1.1f%%', startangle=90, explode=explode_gastos)
     plt.title('DESPESAS MENSAIS (MICROANÁLISE)')
     plt.show()
 
 
     labels_renda = ["GANHO %d: R$ %.2f "%((i+1),vet_renda[i]) for i in range(len(vet_renda))]
-    explode_renda = [0.001 if r == max(vet_renda) else 0 for r in vet_renda]
+    explode_renda = [0.01 if r == max(vet_renda) else 0 for r in vet_renda]
     plt.pie(vet_renda, labels=labels_renda, autopct='%1.1f%%', startangle=90, explode=explode_renda)
     plt.title('GANHOS MENSAIS (MICROANÁLISE)')
     plt.show()
@@ -227,7 +229,7 @@ def Proje(vet_gastos, vet_renda):
         resp3 = float(input("INSIRA QUANTO VOÇÊ DESEJA AUMENTAR DO SEU MENOR GANHO:  \t O VALOR SERÁ CONVERTIDO PARA A PORCENTAGEM EQUIVALENTE \n"))
         menor_ganho = (min(vet_renda) * (resp3 / 100)) + min(vet_renda)
         if menor_ganho==0:
-            for i, e in range(len(vet_gastos)):
+            for i, e in enumerate(len(vet_gastos)):
                 if e[i]!=0 and e[i]<max(vet_gastos) and e[i]<e[i+1]:
                     menor_ganho = (e[i] * (resp3 / 100)) + e[i]
                     pesq = vet_renda.index(e[i])
@@ -357,7 +359,8 @@ def listar2(vet_cad,op,vet,n):
 def main():
     vet_gastos = []
     vet_renda = []
-    vet_cad = []  
+    vet_cad = [] 
+    vetc=0 
     val=0
     receb=0
     n_div=0
@@ -373,7 +376,7 @@ def main():
 
         elif op == 1:
              vet_cad=[]
-             cadastro(vet_cad, quant)
+             vetc=cadastro(vet_cad, quant)
              print("Processo de adezão finalizado")
 
             # Chamar a função para Inserir os dados nos vetores
@@ -398,7 +401,7 @@ def main():
 
 
         elif op == 4:
-            atualizar(vet_gastos,vet_renda,n_d,n_r)
+            atualizar(vet_gastos, vet_renda, len(vet_gastos), len(vet_renda)) 
             print("\n\nATUALIZAR\n\n")
             # Listar todos os dados dos vetores
             
@@ -407,15 +410,12 @@ def main():
             print("1-GANHOS")
             print("2-DESPESAS")
             ops= print(int (input("INDIQUE AQUI SUA ESCOLHA: ")))
-            if (vet_cad or vet_gastos or vet_renda)==0:
-                print( "NÃO HÁ DADOS A SEREM LISTADO")
-                
-            elif ops==1:
-             listar2(vet_cad,op,vet_renda,n_r)
-             
+            if ops==1:
+                listar2(vetc,op,vet_renda,)
             else:
-                listar2(vet_cad,op, vet_gastos,n_d)
-            
+               listar2(vetc,op, vet_gastos,)
+               print("\n\nLISTAR\n\n")
+               print("Processo de listagem finalizado.")
             print("\n\nLISTAR\n\n")
 
         else:
@@ -423,4 +423,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 ```
